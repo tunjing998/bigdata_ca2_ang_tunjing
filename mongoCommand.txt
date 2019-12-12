@@ -1,0 +1,5 @@
+mongoimport -d bigdata_ca2_ang_tunjing -c dublin_weather --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/hourly_dublin_17_18.csv --headerline
+
+mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_temperature --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Temperature.csv --fields=date,temperature
+
+mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_power --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Power.csv --fields=date,power
