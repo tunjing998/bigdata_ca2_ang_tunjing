@@ -77,9 +77,7 @@ reduceAverage = function(key,value){
     return Array.avg(value);
 }
 
-db.dublin_weather.find(){
-    
-}
+db.dublin_weather.find({},{rain:1,temp:1,wetb:1,dewpt:1,vappr:1,rhum:1,msl:1,wdsp:1,wddir:1,ww:1,w:1,sun:1,vis:1,clht:1,clamt:1})
 
 db.jlhome_temperature.mapReduce(mapTemperature,reduceAverage,{out:"jlhome_temperature_hour"})
 db.jlhome_power.mapReduce(mapPower,reduceAverage,{out:"jlhome_power_hour"})
