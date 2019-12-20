@@ -28,8 +28,7 @@ colnames(jlhome_temperature_hour) = c("jltemperature","date")
 alldata <- merge(x=jlhome_power_hour,y=jlhome_temperature_hour,by="date")
 alldata <- merge(x=alldata,y= dublin_weather,by="date")
 
-want<- c(alldata$date,alldata$jlpower,alldata$jltemperature,alldata$rain,alldata$temp,alldata$wetb,alldata$dewpt,alldata$vappr,alldata$rhum,alldata$msl,alldata$wdsp,alldata$wddir,alldata$ww,alldata$w,alldata$sun,alldata$vis,alldata$clht,alldata$clamt)
-want<- c("date","jlpower","jltemperature","rain","temp","wetb","dewpt","vappr","rhum","msl","wdsp","wddir","ww","w","sun","vis","clht","clamt")
+want<- c("date","jlpower","jltemperature","rain","temp","wetb","dewpt","vappr","rhum","msl","wdsp","wddir","ww","sun","vis","clht","clamt")
 
 mydata <-subset(alldata,select = want)
 
@@ -43,6 +42,7 @@ attach(mydata)
 
 boxplot(jlpower)
 hist(jlpower)
+sd(jlpower)
 outliers(jlpower)$numOutliers
 # 408 outlier
 
@@ -58,15 +58,18 @@ outliers(rain)$numOutliers
 
 boxplot(temp)
 hist(temp)
+sd(temp)
 outliers(temp)$numOutliers
 # 6
 
 boxplot(wetb)
+sd(wetb)
 hist(wetb)
 #0
 
 boxplot(dewpt)
 hist(dewpt)
+sd(dewpt)
 outliers(dewpt)$numOutliers
 #10
 
@@ -82,6 +85,7 @@ outliers(rhum)$numOutliers
 
 boxplot(msl)
 hist(msl)
+sd(msl)
 outliers(msl)$numOutliers
 #19
 
@@ -92,8 +96,11 @@ outliers(wdsp)$numOutliers
 
 boxplot(wddir)
 hist(wddir)
+sd(wddir)
 outliers(wddir)$numOutliers
 #0
+
+barplot(table(ww))
 
 boxplot(sun)
 hist(sun)
@@ -107,6 +114,7 @@ outliers(vis)$numOutliers
 
 boxplot(clht)
 hist(clht)
+sd(clht)
 outliers(clht)$numOutliers
 remove999 <- subset(clht,clht!=999)
 boxplot(remove999)
@@ -117,10 +125,11 @@ summary(clht==999)
 #2247 data is no clht
 clhtReplace = clht
 clhtReplace[clhtReplace==999]<- 0
+boxplot(clhtReplace)
 
 
 table(clamt)
-
+barplot(table(clamt))
 #reference to wenyu
 define_daytime<- function(data,n){
   daytime <-c()
@@ -171,7 +180,7 @@ cor(dewpt,vappr,method="spearman")
 cor(rhum,sun)
 cor(rhum,vis)
 
-scale_data <- scale(data.frame(jlpower,jltemperature,rain,temp,wetb,dewpt,vappr,rhum,msl,wdsp,wddir,sun,vis,clhtReplace))
+scale_data <- scale(data.frame(jlpower,jltemperature,rain,temp,wetb,dewpt,vappr,rhum,msl,wdsp,wddir,sun,vis,clht))
 wss <- (nrow(scale_data)-1)*sum(apply(scale_data,2,var))
 for (i in 2:15){
   wss[i] <- sum(kmeans(scale_data, centers=i)$withinss)
@@ -199,13 +208,16 @@ plot(pca$x[,1],pca$x[,2],xlab="PC 1", ylab="PC 2",
      col=k2data$cluster,pch=k2data$cluster)
 plot(pca$x[,2],pca$x[,3],xlab="PC 2", ylab="PC 3",
      col=k2data$cluster,pch=k2data$cluster)
-plot(pca$x[,1],pca$x[,3],xlab="PC 1", ylab="PC 2",
+plot(pca$x[,1],pca$x[,3],xlab="PC 1", ylab="PC 3",
      col=k2data$cluster,pch=k2data$cluster)
 attach(mydata)
+pairs(numericData)
+boxplot(log(jlpower))
+pairs(~log(jlpower)+jltemperature+rain+temp+wetb+dewpt+vappr+rhum+msl+wdsp+wddir+vis+clht)
 lmresult <- lm(log(jlpower)~vappr)
 plot(lmresult)
 summary(lmresult)
-lmresultMulti <- lm(log(jlpower)~jltemperature+vappr+rhum++wdsp+sun+clhtReplace+clamt+daytime)
+lmresultMulti <- lm(log(jlpower)~jltemperature+vappr+rhum++wdsp+sun+clht+clamt+daytime)
 plot(lmresultMulti)
 summary(lmresultMulti)
 
@@ -221,7 +233,7 @@ BootstrapRand<-function(data, mod_formula, rep){
   coef_table
   }
 
-lm_bs_multi <- BootstrapRand(mydata,log(jlpower)~jltemperature+vappr+rhum++wdsp+sun+clhtReplace+clamt+daytime,100000)
+lm_bs_multi <- BootstrapRand(mydata,log(jlpower)~jltemperature+vappr+rhum++wdsp+sun+clht+clamt+daytime,100000)
 
 apply(lm_bs_multi,2,mean)
 #r_sq=1-SSE/SST
