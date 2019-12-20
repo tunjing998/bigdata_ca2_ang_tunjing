@@ -1,0 +1,37 @@
+ jlhome:
+ {
+        "_id" : ObjectId("5df3b8e5e37387ad6d82d98f"),
+        "date" : ISODate("2017-10-12T23:05:00Z"),
+        "power" : 29
+ }
+ jltemperature:
+ {
+        "_id" : ObjectId("5df3a866674fa3c093ed8649"),
+        "date" : ISODate("2017-10-12T23:00:00Z"),
+        "temperature" : 16.3
+ }
+ dublinweather:
+ {
+        "_id" : ObjectId("5df8ae0694ecf185bfac0915"),
+        "date" : ISODate("2017-01-01T00:00:00Z"),
+        "ind-rain" : 0,
+        "rain" : 0.9,
+        "ind-temp" : 0,
+        "temp" : 5.3,
+        "ind-wetb" : 0,
+        "wetb" : 4.7,
+        "dewpt" : 3.9,
+        "vappr" : 8.1,
+        "rhum" : 91,
+        "msl" : 1019.9,
+        "ind-wdsp" : 2,
+        "wdsp" : 12,
+        "ind-wddir" : 2,
+        "wddir" : 340,
+        "ww" : 61,
+        "w" : 62,
+        "sun" : 0,
+        "vis" : 25000,
+        "clht" : 45,
+        "clamt" : 8
+}

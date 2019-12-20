@@ -1,0 +1,28 @@
+collection:
+    customers:
+    {
+        "_id" : ObjectId("dsasdadsa"),
+        "customerDetail":{
+            customer_name:"Tunjing",
+            customer_address:"19 , Jalan Setia 10/4",
+            customer_contact_number :"+60167356175"
+        },
+        "region": "Ireland"
+    },
+    temperatures:{
+        "_id" : ObjectId("sdsdsada"),
+        "customer_id":ObjectId("dsasdadsa"),
+        "record" : [
+           { "date" : ISODate("2017-10-12T23:00:00Z"),
+             "temperature" : 16.3}
+        ]
+    },    
+    powers:{
+        "_id" : ObjectId("sdsdsadddda"),
+        "customer_id":ObjectId("dsasdadsa"),
+        "record" : [
+           { "date" : ISODate("2017-10-12T23:05:00Z"),
+             "power" : 29}
+        ]
+    }
+    
