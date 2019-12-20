@@ -1,0 +1,52 @@
+cd "C:\Program Files\MongoDB\Server\4.2\bin"
+
+mongod --shardsvr --replSet testSharding --dbpath D:/MongoDB/MongoShardingTest/mongo1 --bind_ip localhost --port 27011
+mongod --shardsvr --replSet testSharding --dbpath D:/MongoDB/MongoShardingTest/mongo2 --bind_ip localhost --port 27012
+mongod --shardsvr --replSet testSharding --dbpath D:/MongoDB/MongoShardingTest/mongo3 --bind_ip localhost --port 27013
+
+mongod --shardsvr --replSet testSharding2 --dbpath D:/MongoDB/MongoShardingTest2/mongo1 --bind_ip localhost --port 27021
+mongod --shardsvr --replSet testSharding2 --dbpath D:/MongoDB/MongoShardingTest2/mongo2 --bind_ip localhost --port 27022
+mongod --shardsvr --replSet testSharding2 --dbpath D:/MongoDB/MongoShardingTest2/mongo3 --bind_ip localhost --port 27023
+
+
+mongod --configsvr --replSet shardConfig --dbpath D:/MongoDB/MongoConfigServer/mongo1 --bind_ip localhost --port 27031
+mongod --configsvr --replSet shardConfig --dbpath D:/MongoDB/MongoConfigServer/mongo2 --bind_ip localhost --port 27032
+mongod --configsvr --replSet shardConfig --dbpath D:/MongoDB/MongoConfigServer/mongo3 --bind_ip localhost --port 27033
+
+mongos --configdb shardConfig/localhost:27031,localhost:27032,localhost:27033 --bind_ip localhost --port 27041
+
+
+rs.initiate({
+    _id:"testSharding",
+    members:[
+    {_id:1,host:"localhost:27011"},
+    {_id:2,host:"localhost:27012"},
+    {_id:3,host:"localhost:27013"}
+    ]
+ })
+
+ rs.initiate({
+    _id:"testSharding2",
+    members:[
+    {_id:1,host:"localhost:27021"},
+    {_id:2,host:"localhost:27022"},
+    {_id:3,host:"localhost:27023"}
+    ]
+ })
+
+ rs.initiate({
+    _id:"shardConfig",
+    members:[
+    {_id:1,host:"localhost:27031"},
+    {_id:2,host:"localhost:27032"},
+    {_id:3,host:"localhost:27033"}
+    ]
+ })
+
+ 
+sh.addShard("testSharding/localhost:27011,localhost:27012,localhost:27013");
+sh.addShard("testSharding2/localhost:27021,localhost:27022,localhost:27023");
+sh.enableSharding("bigdata_ca2_ang_tunjing")
+
+use config
+db.settings.save( { _id:"chunksize", value: 1 } )
