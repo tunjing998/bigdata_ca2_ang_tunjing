@@ -1,5 +1,18 @@
+//Simple Import Data
+
+
 mongoimport -d bigdata_ca2_ang_tunjing -c dublin_weather --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/hourly_dublin_17_18.csv --headerline
 
 mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_temperature --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Temperature.csv --fields=date,temperature
 
 mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_power --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Power.csv --fields=date,power
+
+
+
+
+// Importing data To Cloud Cluster
+mongo "mongodb+srv://cluster0-ag8p8.azure.mongodb.net/test" --username tunjing
+
+mongoimport --host Cluster0-shard-0/cluster0-shard-00-00-ag8p8.azure.mongodb.net:27017,cluster0-shard-00-01-ag8p8.azure.mongodb.net:27017,cluster0-shard-00-02-ag8p8.azure.mongodb.net:27017 --ssl --username tunjing --password East0508 --authenticationDatabase admin --db bigdata_ca2_ang_tunjing --collection dublin_weather --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/hourly_dublin_17_18.csv --headerline
+
+

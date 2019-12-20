@@ -47,6 +47,21 @@ rs.initiate({
 sh.addShard("testSharding/localhost:27011,localhost:27012,localhost:27013");
 sh.addShard("testSharding2/localhost:27021,localhost:27022,localhost:27023");
 sh.enableSharding("bigdata_ca2_ang_tunjing")
+sh.shardCollection("bigdata_ca2_ang_tunjing.jlhome_temperature", { _id : "hashed" } )
+sh.shardCollection("bigdata_ca2_ang_tunjing.jlhome_power", { _id : "hashed" } )
+sh.shardCollection("bigdata_ca2_ang_tunjing.dublin_weather", { _id : "hashed" } )
+
 
 use config
 db.settings.save( { _id:"chunksize", value: 1 } )
+
+
+sh.startBalancer()
+
+
+mongoimport -d bigdata_ca2_ang_tunjing -c dublin_weather --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/hourly_dublin_17_18.csv --headerline --port 27041
+
+mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_temperature --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Temperature.csv --fields=date,temperature --port 27041
+
+mongoimport -d bigdata_ca2_ang_tunjing -c jlhome_power --type csv --file D:/DKIt/BigData/bigdata_ca2_ang_tunjing/Project_files/JLHome1718Power.csv --fields=date,power --port 27041
+

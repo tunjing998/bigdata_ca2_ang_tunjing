@@ -4,21 +4,21 @@
 db.dublin_weather.find().forEach(function (el) {
     let tmp = el.date.split('/');
     let tmp2 = tmp[2].split(' ');
-    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");  
+    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");
     db.dublin_weather.save(el);
 })
 
 db.jlhome_temperature.find().forEach(function (el) {
     let tmp = el.date.split('/');
     let tmp2 = tmp[2].split(' ');
-    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");  
+    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");
     db.jlhome_temperature.save(el);
 })
 
 db.jlhome_power.find().forEach(function (el) {
     let tmp = el.date.split('/');
     let tmp2 = tmp[2].split(' ');
-    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");  
+    el.date = new Date(tmp2[0] + "-" + tmp[1] + "-" + tmp[0] + "T" + tmp2[1] + ":00Z");
     db.jlhome_power.save(el);
 })
 
@@ -29,7 +29,7 @@ db.dublin_weather.find({
     }
 })
 
-db.jlhome_power_hour.find({
+db.jlhome_power.find({
     "date": {
         $gte: ISODate("2018-01-01T00:00:00.000Z"),
         $lt: ISODate("2019-01-01T00:00:00.000Z")
@@ -46,48 +46,76 @@ db.jlhome_temperature.find({
 mapTemperature = function () {
     let d = this.date;
     let day = d.getDate();
-    if(day<10)
-    {
-        day = "0"+day;
+    if (day < 10) {
+        day = "0" + day;
     }
     let hour = d.getHours();
-    if(hour<10){
-        hour = "0"+hour;
+    if (hour < 10) {
+        hour = "0" + hour;
     }
-    let d2 = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+(d.getDate())+"T"+hour+":00:00";
-    emit(d2,this.temperature);
+    let d2 = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + (d.getDate()) + "T" + hour + ":00:00";
+    emit(d2, this.temperature);
 }
 
 mapPower = function () {
     let d = this.date;
     let day = d.getDate();
-    if(day<10)
-    {
-        day = "0"+day;
+    if (day < 10) {
+        day = "0" + day;
     }
     let hour = d.getHours();
-    if(hour<10){
-        hour = "0"+hour;
+    if (hour < 10) {
+        hour = "0" + hour;
     }
-    let d2 = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+(d.getDate())+"T"+hour+":00:00";
-    emit(d2,this.power);
+    let d2 = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + (d.getDate()) + "T" + hour + ":00:00";
+    emit(d2, this.power);
 }
 
-reduceAverage = function(key,value){
+reduceAverage = function (key, value) {
     return Array.avg(value);
 }
 
-db.dublin_weather.find({},{rain:1,temp:1,wetb:1,dewpt:1,vappr:1,rhum:1,msl:1,wdsp:1,wddir:1,ww:1,w:1,sun:1,vis:1,clht:1,clamt:1})
 
-db.jlhome_temperature.mapReduce(mapTemperature,reduceAverage,{out:"jlhome_temperature_hour"})
-db.jlhome_power.mapReduce(mapPower,reduceAverage,{out:"jlhome_power_hour"})
+db.jlhome_temperature.mapReduce(mapTemperature, reduceAverage, { out: "jlhome_temperature_hour" })
+db.jlhome_power.mapReduce(mapPower, reduceAverage, { out: "jlhome_power_hour" })
 
 
 db.jlhome_temperature_hour.find().forEach(function (el) {
-    el.date = new Date(el._id);  
+    el.date = new Date(el._id);
     db.jlhome_temperature_hour.save(el);
 })
 db.jlhome_power_hour.find().forEach(function (el) {
-    el.date = new Date(el._id);  
+    el.date = new Date(el._id);
     db.jlhome_power_hour.save(el);
 })
+
+db.jlhome_power_hour.find({
+    "date": {
+        $gte: ISODate("2018-01-01T00:00:00.000Z"),
+        $lt: ISODate("2019-01-01T00:00:00.000Z")
+    }
+})
+
+db.jlhome_temperature_hour.find({
+    "date": {
+        $gte: ISODate("2018-01-01T00:00:00.000Z"),
+        $lt: ISODate("2019-01-01T00:00:00.000Z")
+    }
+})
+
+
+//https://stackoverflow.com/questions/45455099/mongodb-how-to-aggregate-by-month-and-year
+db.jlhome_power.aggregate(
+    {
+        $project: {
+            month: { $month: "$date" },
+            year: { $year: "$date" },
+            power : 1
+        }
+    },
+    {
+        $group: {
+            _id: { month: "$month", year: "$year" },
+            total: { $sum: "$power" }
+        }
+    })
